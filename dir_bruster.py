@@ -4,7 +4,13 @@
 import urllib2
 import threading
 import Queue
+import os
 import urllib
+import argparse
+
+resume = None
+mutex = threading.Lock()
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.96 Safari/537.36'
 
 def build_wordlist(wordlist):
     '''Create Queue of file wordlist
@@ -51,7 +57,10 @@ def dir_bruster(target, word_queue, extensions=None):
 
         if extensions:
             for ext in extensions:
-                paths.append('/%s%s' % (path, ext))
+                if ext.startswith('.'):
+                    paths.append('/%s%s' % (path, ext))
+                else:
+                    paths.append('/%s.%s' % (path, ext))
         
         for brust in paths:
             url = '%s%s' % (target, urllib.quote(brust)) #urllib.quote can encode request path to support Chinese or other language
@@ -68,14 +77,23 @@ def dir_bruster(target, word_queue, extensions=None):
                     print('!!! %d => %s' % (e.code, url))
                 pass
 
-threads = 10 # thread count
-target_url = 'http://testphp.vulnweb.com' #target url to scan, there is a test site provided by OWASP
-wordlist = './dir.txt' #wordlist path
-resume = None
-mutex = threading.Lock()
-user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.96 Safari/537.36'
-word_queue = build_wordlist(wordlist)
-extensions = ['.php','.html']
-for i in range(threads):
-    t = threading.Thread(target=dir_bruster, args=(target_url, word_queue, extensions))
-    t.start()
+def main():
+    parse = argparse.ArgumentParser(description='A dir scanner')
+    parse.add_argument('url', action='store', help='target url')
+    parse.add_argument('-w', required=True, dest='wordlist', action='store', help='wordlist path')
+    parse.add_argument('-t', dest='threads', action='store', help='thread count', type=int, default=10)
+    parse.add_argument('-e', dest='extensions', action='store', help='extensions, eg: "php,asp"', default='')
+    args = vars(parse.parse_args())
+    global target,wordlist,threads,extensions
+    target, wordlist, threads, ext = args['url'], args['wordlist'], args['threads'], \
+    args['extensions'].split(',')
+    if not target.startswith("http://"):
+        target = 'http://%s' % target
+    if os.path.exists(wordlist):
+        word_queue = build_wordlist(wordlist)
+        for i in range(threads):
+            t = threading.Thread(target=dir_bruster, args=(target, word_queue, ext))
+            t.start()
+
+if __name__ == '__main__':
+    main()
