@@ -7,6 +7,11 @@ import Queue
 import urllib
 
 def build_wordlist(wordlist):
+    '''Create Queue of file wordlist
+
+    Args:
+        wordlist: file path of the wordlist
+    '''
     fd = open(wordlist, 'rb')
     raw_words = fd.readlines()
     fd.close()
@@ -28,6 +33,13 @@ def build_wordlist(wordlist):
     return words
 
 def dir_bruster(target, word_queue, extensions=None):
+    '''Scan target use wordlist queue and extendsions
+
+    Args:
+        target: target url
+        word_queue: a Queue obj created by build_wordlist function
+        extensions: some extension, a list or tuple
+    '''
     while not word_queue.empty():
         path = word_queue.get()
         paths = []
@@ -42,12 +54,12 @@ def dir_bruster(target, word_queue, extensions=None):
                 paths.append('/%s%s' % (path, ext))
         
         for brust in paths:
-            url = '%s%s' % (target, urllib.quote(brust))
+            url = '%s%s' % (target, urllib.quote(brust)) #urllib.quote can encode request path to support Chinese or other language
             try:
                 headers = {}
                 headers['user-agent'] = user_agent
-                r = urllib2.Request(url, headers=headers)
-                res = urllib2.urlopen(r)
+                r = urllib2.Request(url, headers=headers) # create request through url and headers
+                res = urllib2.urlopen(r) #urlopen send request
                 if len(res.read()) and mutex.acquire(1):
                     print('[%d] => %s' % (res.code, url))
                     mutex.release()
@@ -56,14 +68,14 @@ def dir_bruster(target, word_queue, extensions=None):
                     print('!!! %d => %s' % (e.code, url))
                 pass
 
-threads = 10
-target_url = 'http://testphp.vulnweb.com'
-wordlist = './dir.txt'
+threads = 10 # thread count
+target_url = 'http://testphp.vulnweb.com' #target url to scan, there is a test site provided by OWASP
+wordlist = './dir.txt' #wordlist path
 resume = None
 mutex = threading.Lock()
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.96 Safari/537.36'
 word_queue = build_wordlist(wordlist)
-extensions = ['.php']
+extensions = ['.php','.html']
 for i in range(threads):
     t = threading.Thread(target=dir_bruster, args=(target_url, word_queue, extensions))
     t.start()
