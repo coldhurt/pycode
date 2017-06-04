@@ -84,7 +84,7 @@ def main():
     parse.add_argument('-t', dest='threads', action='store', help='thread count', type=int, default=10)
     parse.add_argument('-e', dest='extensions', action='store', help='extensions, eg: "php,asp"', default='')
     args = vars(parse.parse_args())
-    global target,wordlist,threads,extensions
+    global target,wordlist,threads,ext
     target, wordlist, threads, ext = args['url'], args['wordlist'], args['threads'], \
     args['extensions'].split(',')
     if not target.startswith("http://"):
