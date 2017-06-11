@@ -8,9 +8,7 @@ import threading
 import sys
 import Queue
 from HTMLParser import HTMLParser
-
 from dir_bruster import build_wordlist
-
 
 thread_count = 10
 target_url = 'http://192.168.99.196/wordpress/wp-login.php'
