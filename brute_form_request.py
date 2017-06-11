@@ -9,7 +9,9 @@ from pyquery import PyQuery as pq
 from dir_bruster import build_wordlist
 
 thread_count = 10
+#login form url
 target_url = 'http://192.168.99.196/wordpress/wp-login.php'
+#login form action url
 target_post = 'http://192.168.99.196/wordpress/wp-login.php'
 username_field = 'log'
 password_field = 'pwd'
@@ -50,6 +52,9 @@ class Bruster(object):
                 print(e)
 
     def parse(self, page):
+        '''
+            create post body
+        '''
         par = pq(page)
         inputs = par.find('input')
         body = {}
