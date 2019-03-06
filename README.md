@@ -7,6 +7,7 @@
 - brute_form_request.py : 与上述功能相同，使用requests库，较为简单
 - dir_bruster.py : 根据字典穷举网站路径，支持多线程
 - download_img.py : 下载一篇百度贴吧的帖子中所有的图片，比如壁纸帖之类的
-- http.py : 获取返回的HTTP头，支持批量链接获取，便于比较
+- http_header_test.py : 获取返回的HTTP头，支持批量链接获取，便于比较
 - socks_spider.py : 爬取[https://www.socks-proxy.net/](https://www.socks-proxy.net/)的socks代理地址
 - ishadowx_spider.py : 爬取[https://global.ishadowx.net/](https://global.ishadowx.net/)的socks代理地址，以shadowsocks配置文件的格式输出
+- cors_check.py: 检测cors漏洞
