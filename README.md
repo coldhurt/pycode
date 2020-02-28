@@ -13,3 +13,8 @@
 - ishadowx_spider.py : 爬取[https://global.ishadowx.net/](https://global.ishadowx.net/)的 socks 代理地址，以 shadowsocks 配置文件的格式输出
 - cors_check.py: 检测 cors 漏洞
 - lfi_check.py: 检测本地文件包含漏洞
+- xxe_check.py: 检测非盲注 xxe 漏洞
+
+```bash
+python xxe_check.py -u "http://192.168.99.100/002/index.php?page=xml-validator.php" -d "page=xml-validator.php&xml=<somexml><message>XXxxeXX</message></somexml>&xml-validator-php-submit-button=Validate+XML vulnerable" --cookie "Cookie: showhints=1; wp-settings-time-1=1578462072; PHPSESSID=32ae854b1d9886d1eb1d2202571e865b"
+```
